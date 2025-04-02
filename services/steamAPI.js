@@ -1,7 +1,18 @@
 const axios = require('axios')
 
-const delay = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms))
+// const delay = (ms) => {
+//     return new Promise(resolve => setTimeout(resolve, ms))
+// }
+
+//remove games with same ID
+const removeDuplicateGames = (games) => {
+    const uniqueGames = new Map();
+    
+    games.forEach(game => {
+        uniqueGames.set(game.appid, game); // Map ensures only one entry per appid
+    });
+
+    return Array.from(uniqueGames.values());
 }
 
 const searchGame = async(gameName) => {
@@ -33,7 +44,8 @@ const searchGame = async(gameName) => {
                     results.push({
                         appid: game.appid,
                         name: gameData.name,
-                        description: gameData.short_description || 'No description available'
+                        description: gameData.short_description || 'No description available',
+                        recommendation: gameData.recommendations ? gameData.recommendations.total : 0
                     })
                 }
             } catch (error) {
@@ -41,11 +53,10 @@ const searchGame = async(gameName) => {
             }
         }
 
-        console.log(results)
-        return results
+        return removeDuplicateGames(results)
     } catch (error) {
         console.log(error)
-        throw new Error('Error fetching game data!')
+        throw new Error(error.message)
     }
 }
 
