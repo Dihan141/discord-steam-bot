@@ -44,6 +44,9 @@ const searchGame = async(gameName) => {
                     results.push({
                         appid: game.appid,
                         name: gameData.name,
+                        image: gameData.header_image,
+                        is_free: gameData.is_free,
+                        price: gameData.price_overview,
                         description: gameData.short_description || 'No description available',
                         recommendation: gameData.recommendations ? gameData.recommendations.total : 0
                     })
