@@ -93,7 +93,18 @@ const sendGameDetailsEmbed = async (interaction, game, topGames) => {
     
         await interaction.editReply({ components: [disabledButtons] });
 
-        if (buttonInteraction.customId === 'no' || buttonInteraction.customId === 'back') {
+        if (buttonInteraction.customId === 'no') {
+            // End interaction if user presses "No"
+            await buttonInteraction.editReply({
+                content: `❌ Okay, no problem. You know what to do if you want to add a new game`,
+                embeds: [],
+                components: []
+            });
+            return; 
+        }
+    
+
+        if (buttonInteraction.customId === 'back') {
             await sendGameSelectionEmbed(buttonInteraction, topGames); // Show the 5-game list again
         } else if (buttonInteraction.customId.startsWith('yes_')) {
             saveGameForUser(buttonInteraction.user.id, game);
