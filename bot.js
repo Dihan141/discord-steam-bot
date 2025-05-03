@@ -2,6 +2,7 @@ require('dotenv').config()
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const path = require('path')
 const fs = require('fs')
+const mongoose = require('mongoose')
 const express = require('express')
 const app = express()
 
@@ -52,6 +53,14 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	}
 });
+
+//Connect to mongoDB
+mongoose.connect(process.env.MONGO_URI).then(() => {
+	console.log('Connected to mongoDB')
+}).catch((err) => {
+	console.log('Mongo Error: ', err)
+})
+
 // Log in to Discord
 client.login(process.env.TOKEN);
 

@@ -1,4 +1,5 @@
 const axios = require('axios')
+const Fuse = require('fuse.js')
 const redisClient = require('../configs/redisClient')
 
 // const delay = (ms) => {
@@ -28,7 +29,7 @@ const getAllApps = async () => {
     const response = await axios.get(' http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json')
     const allApps = response.data.applist.apps
 
-    await redisClient.setEx(cacheKey, 86400, JSON.stringify(allApps))
+    await redisClient.setEx(cacheKey, 300, JSON.stringify(allApps))
 
     return allApps
 }
@@ -37,10 +38,18 @@ const searchGame = async(gameName) => {
     try {
         const allApps = await getAllApps()
 
-        //filtering based on game name
-        const games = allApps.filter(app => app.name.toLowerCase().includes(gameName.toLowerCase()))
+        const fuse = new Fuse(allApps, {
+            keys: ['name'],
+            threshold: 0.3, // Lower is stricter, try 0.3–0.4
+            distance: 100,
+            minMatchCharLength: 2,
+        })
 
-        if(games.length > 50){
+        //filtering based on game name
+        const fuseResults = fuse.search(gameName)
+        console.log(fuseResults)
+
+        if(fuseResults.length > 100){
             throw new Error('Give more specific name')
         }
 
@@ -49,7 +58,8 @@ const searchGame = async(gameName) => {
         // const gameResponse = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${id}`)
         // console.log(gameResponse)
         // console.log(gameResponse.data[id])
-        for(const game of games){
+        for(const result of fuseResults){
+            let game = result.item
             console.log(`Fetching details for ${game.name} (ID: ${game.appid})...`)
 
             try {

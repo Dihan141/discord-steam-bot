@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js')
 const { searchGame } = require('../services/steamAPI')
+const { saveGameForGuild } = require('../UtilityFunctions/saveGameForGuild')
 
 //send the selection option to user
 //users can select a game from here
@@ -45,7 +46,7 @@ async function sendGameSelectionEmbed(interaction, topGames) {
             )
         );
     
-        await interaction.editReply({ components: disabledButtons });
+        await interaction.editReply({ components: disabledButtons, ephemeral: true });
 
         await sendGameDetailsEmbed(buttonInteraction, selectedGame, topGames);
     });
@@ -64,7 +65,7 @@ const sendGameDetailsEmbed = async (interaction, game, topGames) => {
     const embed = new EmbedBuilder()
                 .setColor('#2f3136')
                 .setTitle(`📌 ${game.name}`)
-                .setDescription(`**Description:** ${game.description}\n\nDo you want to add this game to your saved list?`)
+                .setDescription(`**Description:** ${game.description}\n\n**Price:** ${getPrice(game)}\n\nDo you want to add this game to your saved list?`)
                 .setImage(game.image)
                 .setFooter({ text: 'Powered by Steam API' });
 
@@ -98,7 +99,8 @@ const sendGameDetailsEmbed = async (interaction, game, topGames) => {
             await buttonInteraction.editReply({
                 content: `❌ Okay, no problem. You know what to do if you want to add a new game`,
                 embeds: [],
-                components: []
+                components: [],
+                ephemeral: true
             });
             return; 
         }
@@ -107,12 +109,8 @@ const sendGameDetailsEmbed = async (interaction, game, topGames) => {
         if (buttonInteraction.customId === 'back') {
             await sendGameSelectionEmbed(buttonInteraction, topGames); // Show the 5-game list again
         } else if (buttonInteraction.customId.startsWith('yes_')) {
-            saveGameForUser(buttonInteraction.user.id, game);
-            await buttonInteraction.editReply({
-                content: `✅ **${game.name}** has been added to your saved list!`,
-                embeds: [],
-                components: []
-            });
+
+            await saveGameForGuild(buttonInteraction, game)
         }
     })
 
@@ -122,8 +120,19 @@ const sendGameDetailsEmbed = async (interaction, game, topGames) => {
     // });
 }
 
-const saveGameForUser = (uid, game) => {
-    console.log(`${game.name} was saved!`)
+/**
+ * Format price
+ * @param {Object} game 
+ */
+const getPrice = (game) => {
+    if(game.is_free){
+        return 'This game is free'
+    }
+    if(game.price.discount_percent > 0){
+        return `~~$${game.price.initial_formatted}~~ ➜ **$${game.price.final_formatted}**`
+    }
+
+    return game.price.final_formatted
 }
 
 module.exports = {
@@ -155,47 +164,6 @@ module.exports = {
             topGames = games.slice(0, 5)
 
             sendGameSelectionEmbed(interaction, topGames)
-
-            // const buttonRows = topGames.map(game =>
-            //     new ActionRowBuilder().addComponents(
-            //         new ButtonBuilder()
-            //             .setCustomId(`game_${game.appid}`)
-            //             .setLabel(game.name.substring(0, 80)) // Max 80 chars
-            //             .setStyle(ButtonStyle.Secondary)
-            //     )
-            // )
-
-            // const titleText = games.length > 1 ? 'Multiple games were found for this search, select a Game to Track 🎮'
-            //                                     : 'This game was found based on your search, press for details'
-
-            // const embed = new EmbedBuilder()
-            // .setColor('#2f3136') // Dark color for background effect
-            // .setTitle(titleText)
-            // .setDescription('Choose a game from the list below to add to your tracked list.')
-            // .setFooter({ text: 'Powered by Steam API' });
-
-            // await interaction.editReply({
-            //     embeds: [embed],
-            //     components: buttonRows
-            // })
-
-            // const filter = (i) => i.user.id === interaction.user.id; // Make sure the user who clicked the button is the one who invoked the command
-            // const collector = interaction.channel.createMessageComponentCollector({
-            //     filter,
-            //     time: 15000, // Time in ms for the collector to listen for interactions (e.g., 15 seconds)
-            // });
-
-            // collector.on('collect', async(buttonInteraction) => {
-            //     collector.stop()
-            //     const gameAppId = buttonInteraction.customId.split('_')[1] // Extract the appId from the button customId
-            //     console.log(gameAppId)
-
-            //     // Find the selected game based on the appId
-            //     const selectedGame = games.find(game => game.appid == gameAppId)
-            //     console.log(selectedGame)
-
-            //     await sendGameDetailsEmbed(buttonInteraction, selectedGame, topGames)
-            // })
         } catch (error) {
             console.log(error)
             await interaction.editReply(`❌ ${error.message}`)
