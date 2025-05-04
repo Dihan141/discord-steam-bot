@@ -3,7 +3,8 @@ const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require(
 const path = require('path')
 const fs = require('fs')
 const mongoose = require('mongoose')
-const express = require('express')
+const express = require('express');
+const { checkPrice } = require('./UtilityFunctions/priceChecker');
 const app = express()
 
 const PORT = process.env.PORT || 5000
@@ -14,6 +15,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
     // Register commands here or use a slash command manager
+	checkPrice()
 });
 
 client.commands = new Collection()

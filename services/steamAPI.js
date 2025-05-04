@@ -65,9 +65,9 @@ const searchGame = async(gameName) => {
             try {
                 //await delay(500)
 
-                const gameResponse = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${game.appid}`)
-                if(gameResponse.data[game.appid].success){
-                    gameData = gameResponse.data[game.appid].data
+                const gameResponseData = await gameDetails(game.appid)
+                if(gameResponseData[game.appid].success){
+                    gameData = gameResponseData[game.appid].data
                     results.push({
                         appid: game.appid,
                         name: gameData.name,
@@ -90,6 +90,12 @@ const searchGame = async(gameName) => {
     }
 }
 
+const gameDetails = async (appId) => {
+    const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}`)
+    return response.data
+}
+
 module.exports = {
-    searchGame
+    searchGame,
+    gameDetails
 }
