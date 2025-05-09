@@ -15,7 +15,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
 
-	checkPrice(client)
+	//checkPrice(client)
 });
 
 client.commands = new Collection()

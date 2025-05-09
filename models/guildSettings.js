@@ -8,6 +8,9 @@ const GuildSettingsSchema = new mongoose.Schema({
     },
     notificationChannelId: {
         type: String
+    },
+    mentionRoleId: {
+        type: String
     }
 })
 

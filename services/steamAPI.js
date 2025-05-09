@@ -40,7 +40,7 @@ const searchGame = async(gameName) => {
 
         const fuse = new Fuse(allApps, {
             keys: ['name'],
-            threshold: 0.3, // Lower is stricter, try 0.3–0.4
+            threshold: 0.2, // Lower is stricter, try 0.3–0.4
             distance: 100,
             minMatchCharLength: 2,
         })

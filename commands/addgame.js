@@ -27,7 +27,7 @@ async function sendGameSelectionEmbed(interaction, topGames) {
     });
 
     const filter = (i) => i.user.id === interaction.user.id
-    const collector = interaction.channel.createMessageComponentCollector({ filter })
+    const collector = interaction.channel.createMessageComponentCollector({ filter, time:15000 })
 
     collector.on('collect', async (buttonInteraction) => {
         collector.stop()
@@ -35,7 +35,7 @@ async function sendGameSelectionEmbed(interaction, topGames) {
         const selectedGame = topGames.find(game => game.appid == gameAppId)
 
         if (!selectedGame) {
-            await buttonInteraction.reply({ content: '❌ Error: Game not found.', ephemeral: true })
+            await buttonInteraction.reply({ content: '❌ Game not found.', ephemeral: true })
             return;
         }
 
@@ -51,10 +51,20 @@ async function sendGameSelectionEmbed(interaction, topGames) {
         await sendGameDetailsEmbed(buttonInteraction, selectedGame, topGames);
     });
 
-    // collector.on('end', async () => {
-    //     // Delete message after timeout
-    //     await message.delete().catch(() => {}); // Catch errors if already deleted
-    // });
+    collector.on('end', async (collected, reason) => {
+        if (reason === 'time') {
+            const disabledButtons = buttonRows.map(row =>
+                new ActionRowBuilder().addComponents(
+                    row.components.map(button => button.setDisabled(true))
+                )
+            );
+    
+            await interaction.editReply({
+                components: disabledButtons,
+                ephemeral: true
+            }).catch(() => {}); // In case already deleted or updated
+        }
+    })
 }
 
 //send selected game details to user

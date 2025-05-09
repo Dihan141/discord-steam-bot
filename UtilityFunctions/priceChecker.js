@@ -53,27 +53,40 @@ const notifyUsers = async (data, callBack) => {
         const {client, guildId, appid, gameData} = data
         gameData.appid = appid
         const guildSettings = await GuildSettings.findOne({guildId})
+        const mentionRoleId = guildSettings.mentionRoleId
+        const mentionText = mentionRoleId ? `<@&${mentionRoleId}>` : '@everyone'
 
         const channel = await client.channels.fetch(guildSettings.notificationChannelId).catch(() => null);
         if (!channel) {
             throw new Error('❌ Set a channel to receive updates. Command: /setchannel')
         }
         
-        callBack(channel, gameData)
+        const callbackData = {
+            channel,
+            gameData,
+            mentionRoleId,
+            mentionText
+        }
+        callBack(callbackData)
     } catch (error) {
         console.log(error)
     }
 }
 
-const sendHistoricalLowEmbed = (channel, game) => {
+const sendHistoricalLowEmbed = (data) => {
+    const { channel, gameData, mentionRoleId, mentionText } = data
     const embed = new EmbedBuilder()
-                    .setTitle(`💸 ${game.name} is at historical low!`)
-                    .setDescription(`\n**Price:**~~$${game.price_overview.initial_formatted}~~ → **$${game.price_overview.final_formatted}**\n
-                                    **Discount:** ${game.price_overview.discount_percent}%\n
-                                    [Open in Steam](https://store.steampowered.com/app/${game.appid}/)`)
-                    .setImage(game.header_image)
+                    .setTitle(`💸 ${gameData.name} is at historical low!`)
+                    .setDescription(`\n**Price:**~~$${gameData.price_overview.initial_formatted}~~ → **$${gameData.price_overview.final_formatted}**\n
+                                    **Discount:** ${gameData.price_overview.discount_percent}%\n
+                                    [Open in Steam](https://store.steampowered.com/app/${gameData.appid}/)`)
+                    .setImage(gameData.header_image)
                     .setColor(0x1b2838)
     channel.send({
+        content: mentionText,
+        allowedMentions: mentionRoleId
+        ? { roles: [mentionRoleId] }
+        : { parse: ['everyone'] },
         embeds: [embed]
     })
 }
