@@ -26,7 +26,8 @@
     "express": "^4.21.2",
     "fuse.js": "^7.1.0",
     "mongoose": "^8.3.4",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

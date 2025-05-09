@@ -91,7 +91,7 @@ const searchGame = async(gameName) => {
 }
 
 const gameDetails = async (appId) => {
-    const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}`)
+    const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=bd&l=english`)
     return response.data
 }
 
