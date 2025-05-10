@@ -91,16 +91,16 @@ const searchGame = async(gameName) => {
 }
 
 const gameDetails = async (appId) => {
-    const cacheKey = `steam:game_details:${appId}`
-    const cachedGame = await redisClient.get(cacheKey)
-    if(cachedGame){
-        console.log('returning cached value')
-        return JSON.parse(cachedGame)
-    }
+    // const cacheKey = `steam:game_details:${appId}`
+    // const cachedGame = await redisClient.get(cacheKey)
+    // if(cachedGame){
+    //     console.log('returning cached value')
+    //     return JSON.parse(cachedGame)
+    // }
     const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=bd&l=english`)
-    if(response.data[appId].success){
-        await redisClient.setEx(cacheKey, 43200, JSON.stringify(response.data))
-    } 
+    // if(response.data[appId].success){
+    //     await redisClient.setEx(cacheKey, 43200, JSON.stringify(response.data))
+    // } 
     return response.data
 }
 

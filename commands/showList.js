@@ -1,12 +1,18 @@
-const { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, time } = require('discord.js')
+const { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 const SavedGame = require('../models/savedGames')
 
+/**
+ * 
+ * @param {ChatInputCommandInteraction} interaction 
+ * @returns 
+ */
 async function showSavedGames(interaction) {
     const games = await SavedGame.find({ guildId: interaction.guildId }).sort({ createdAt: -1 }).lean();
 
     // return if no games
     if (!games.length) {
-        return interaction.reply({ content: '📭 No games in the tracked list.', ephemeral: true });
+        await interaction.editReply({ content: '📭 No games in the tracked list.', ephemeral: true });
+        return
     }
 
     const itemsPerPage = 5;
@@ -44,7 +50,7 @@ async function showSavedGames(interaction) {
         );
     };
 
-    const message = await interaction.reply({
+    const message = await interaction.editReply({
         embeds: [generateEmbed(currentPage)],
         components: [getButtons(currentPage)],
         fetchReply: true,
@@ -152,11 +158,11 @@ module.exports = {
      */
     async execute(interaction){
         try {
-            //await interaction.deferReply({ ephemeral: true });
+            await interaction.deferReply({ ephemeral: true });
             await showSavedGames(interaction);
         } catch (error) {
             console.log('Showing list error: ', error.message)
-            await interaction.reply(`❌ An error occured while fetching list.`)
+            await interaction.editReply(`❌ An error occured while fetching list.`)
         }
     }
 }

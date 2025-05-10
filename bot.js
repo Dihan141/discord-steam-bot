@@ -16,10 +16,10 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
 
-	cron.schedule('0 21 * * *', () => {
-		console.log('🕘 Running daily 9 PM price check...')
-		checkPrice(client)
-	})
+	// cron.schedule('0 21 * * *', () => {
+	// 	console.log('🕘 Running daily 9 PM price check...')
+	// 	checkPrice(client)
+	// })
 });
 
 client.commands = new Collection()
@@ -69,6 +69,11 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
 app.get('/', (req, res) => {
 	res.send('Hello World!')
+})
+
+app.get('/check-price', (req, res) => {
+	checkPrice(client)
+	res.send('checked price!')
 })
 
 // Log in to Discord
