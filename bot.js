@@ -67,6 +67,10 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 	console.log('Mongo Error: ', err)
 })
 
+app.get('/', (req, res) => {
+	res.send('Hello World!')
+})
+
 // Log in to Discord
 client.login(process.env.TOKEN);
 
