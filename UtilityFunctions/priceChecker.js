@@ -21,19 +21,29 @@ const checkPrice = async (client) => {
 
             const gamePriceInfo = gameData.price_overview
             if(gamePriceInfo){
+                let data = {
+                    client,
+                    guildId: game.guildId,
+                    appid: game.appid,
+                    gameData
+                }
+
                 if(gamePriceInfo.discount_percent > 0){
-                    if(historyDetails.lows[0].cut <= gamePriceInfo.discount_percent){
-                        console.log(`${game.name} is in historical sale now`)
-                        let data = {
-                            client,
-                            guildId: game.guildId,
-                            appid: game.appid,
-                            gameData
+                    if(!game.notificationSent){
+                        if(historyDetails.lows[0].cut <= gamePriceInfo.discount_percent){
+                            console.log(`${game.name} is in historical sale now`)
+    
+                            notifyUsers(data, sendHistoricalLowEmbed)
                         }
-                        notifyUsers(data, sendHistoricalLowEmbed)
+                        else {
+                            notifyUsers(data, sendSaleEmbed)
+                        }
+
+                        await SavedGame.findOneAndUpdate(game._id, { notificationSent: true })
                     }
-                    else {
-                        console.log('Not in historical low but in sale')
+                } else {
+                    if(game.notificationSent){
+                        await SavedGame.findOneAndUpdate(game._id, { notificationSent: false })
                     }
                 }
             }
@@ -77,8 +87,27 @@ const sendHistoricalLowEmbed = (data) => {
     const { channel, gameData, mentionRoleId, mentionText } = data
     const embed = new EmbedBuilder()
                     .setTitle(`💸 ${gameData.name} is at historical low!`)
-                    .setDescription(`\n**Price:**~~$${gameData.price_overview.initial_formatted}~~ → **$${gameData.price_overview.final_formatted}**\n
+                    .setDescription(`\n**Price:**~~${gameData.price_overview.initial_formatted}~~ → **${gameData.price_overview.final_formatted}**\n
                                     **Discount:** ${gameData.price_overview.discount_percent}%\n
+                                    [Open in Steam](https://store.steampowered.com/app/${gameData.appid}/)`)
+                    .setImage(gameData.header_image)
+                    .setColor(0x1b2838)
+    channel.send({
+        content: mentionText,
+        allowedMentions: mentionRoleId
+        ? { roles: [mentionRoleId] }
+        : { parse: ['everyone'] },
+        embeds: [embed]
+    })
+}
+
+const sendSaleEmbed = (data) => {
+    const { channel, gameData, mentionRoleId, mentionText } = data
+    const embed = new EmbedBuilder()
+                    .setTitle(`💸 ${gameData.name} is on sale!`)
+                    .setDescription(`\n**Price:**~~${gameData.price_overview.initial_formatted}~~ → **${gameData.price_overview.final_formatted}**\n
+                                    **Discount:** ${gameData.price_overview.discount_percent}%\n
+                                    (Not historical low but worth a check I think?)\n
                                     [Open in Steam](https://store.steampowered.com/app/${gameData.appid}/)`)
                     .setImage(gameData.header_image)
                     .setColor(0x1b2838)

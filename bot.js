@@ -3,6 +3,7 @@ const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require(
 const path = require('path')
 const fs = require('fs')
 const mongoose = require('mongoose')
+const cron = require('node-cron')
 const express = require('express');
 const { checkPrice } = require('./UtilityFunctions/priceChecker');
 const app = express()
@@ -15,7 +16,10 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
 
-	//checkPrice(client)
+	cron.schedule('0 21 * * *', () => {
+		console.log('🕘 Running daily 9 PM price check...')
+		checkPrice(client)
+	})
 });
 
 client.commands = new Collection()

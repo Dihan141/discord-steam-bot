@@ -10,6 +10,7 @@ const savedGameSchema = new mongoose.Schema({
     price: Object,
     description: String,
     recommendation: Number,
+    notificationSent: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('SavedGame', savedGameSchema);

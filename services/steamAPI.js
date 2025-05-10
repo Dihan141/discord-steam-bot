@@ -29,7 +29,7 @@ const getAllApps = async () => {
     const response = await axios.get(' http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json')
     const allApps = response.data.applist.apps
 
-    await redisClient.setEx(cacheKey, 300, JSON.stringify(allApps))
+    await redisClient.setEx(cacheKey, 43200, JSON.stringify(allApps))
 
     return allApps
 }
@@ -40,7 +40,7 @@ const searchGame = async(gameName) => {
 
         const fuse = new Fuse(allApps, {
             keys: ['name'],
-            threshold: 0.2, // Lower is stricter, try 0.3–0.4
+            threshold: 0.15, // Lower is stricter, try 0.3–0.4
             distance: 100,
             minMatchCharLength: 2,
         })
@@ -91,7 +91,16 @@ const searchGame = async(gameName) => {
 }
 
 const gameDetails = async (appId) => {
+    const cacheKey = `steam:game_details:${appId}`
+    const cachedGame = await redisClient.get(cacheKey)
+    if(cachedGame){
+        console.log('returning cached value')
+        return JSON.parse(cachedGame)
+    }
     const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=bd&l=english`)
+    if(response.data[appId].success){
+        await redisClient.setEx(cacheKey, 43200, JSON.stringify(response.data))
+    } 
     return response.data
 }
 

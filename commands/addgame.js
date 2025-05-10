@@ -54,7 +54,7 @@ async function sendGameSelectionEmbed(interaction, topGames, sessionId) {
     i.user.id === interaction.user.id &&
     i.customId.endsWith(sessionId);
 
-  const collector = message.createMessageComponentCollector({ filter, time: 60000 });
+  const collector = message.createMessageComponentCollector({ filter });
 
   collector.on('collect', async (buttonInteraction) => {
     collector.stop();
