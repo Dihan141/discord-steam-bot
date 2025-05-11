@@ -141,10 +141,15 @@ const removeGameFromGuild = async (interaction, game) => {
         await SavedGame.deleteOne({ guildId, appid: game.appid })
 
         await interaction.editReply({
-            content: `✅ **${game.name}** has been removed from the saved list by **${interaction.user.tag}**.`,
+            content: `✅ **${game.name}** has been removed from the saved list.`,
             components: [],
             embeds: [],
         })
+
+        await interaction.followUp({
+            content: `📌 **${game.name}** was removed from the tracked list by **${interaction.user.tag}**!`,
+            ephemeral: false,
+        });
         
     } catch (error) {
         console.error('MongoDB remove error:', error)

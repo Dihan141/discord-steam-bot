@@ -57,9 +57,7 @@ async function showSavedGames(interaction) {
         ephemeral: true
     });
 
-    const filter = (i) =>  i.user.id === interaction.user.id
-
-    const collector = message.createMessageComponentCollector({ filter });
+    const collector = message.createMessageComponentCollector();
 
     collector.on('collect', async i => {
         // if (i.user.id !== interaction.user.id)
@@ -158,7 +156,7 @@ module.exports = {
      */
     async execute(interaction){
         try {
-            await interaction.deferReply({ ephemeral: true });
+            await interaction.deferReply();
             await showSavedGames(interaction);
         } catch (error) {
             console.log('Showing list error: ', error.message)

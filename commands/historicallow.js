@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ChannelType } = require('discord.js')
 const { searchGame } = require('../services/steamAPI');
 const { createSession, isValidSession, clearSession } = require('../configs/sessionManager');
-const { getIsThereAnyDealGameId, getHistoricalLowCut } = require('../services/isThereAnyDealAPI')
+const { getIsThereAnyDealGameId, getHistoricalLowCut } = require('../services/isThereAnyDealAPI');
+const e = require('express');
 
 async function sendGameSelectionEmbed(interaction, topGames, sessionId) {
   const embed = new EmbedBuilder()
@@ -84,8 +85,15 @@ async function sendGameDetailsEmbed(interaction, game, sessionId) {
 
     clearSession(interaction.user.id, sessionId); // Clear the session after use
     const message = await interaction.update({
-        embeds: [embed],
+        content: `Fetching historical low data for **${game.name}**`,
+        embeds: [],
         components: [],
+        ephemeral: false,
+    });
+
+    await interaction.followUp({
+        embeds: [embed],
+        ephemeral: false,
     });
 }
 

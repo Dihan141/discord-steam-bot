@@ -38,10 +38,15 @@ const saveGameForGuild = async (interaction, game) => {
         await newGame.save()
 
         await interaction.editReply({
-            content: `✅ **${game.name}** has been added to the saved list by **${interaction.user.tag}**.`,
+            content: `✅ **${game.name}** has been added to the saved list.`,
             components: [],
             embeds: [],
         })
+
+        await interaction.followUp({
+            content: `📌 **${game.name}** was added to the tracked list by **${interaction.user.tag}**!`,
+            ephemeral: false,
+        });
         
     } catch (error) {
         console.error('MongoDB save error:', error)
