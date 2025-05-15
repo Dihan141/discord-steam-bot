@@ -29,7 +29,7 @@ const getAllApps = async () => {
     const response = await axios.get(' http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json')
     const allApps = response.data.applist.apps
 
-    await redisClient.setEx(cacheKey, 43200, JSON.stringify(allApps))
+    await redisClient.setEx(cacheKey, 1800, JSON.stringify(allApps))
 
     return allApps
 }
