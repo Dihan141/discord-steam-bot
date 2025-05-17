@@ -7,6 +7,10 @@ const commands = [
         description: `🎮 Add a Steam game to your server's watchlist. More precise name, more better.\n`,
     },
     {
+        name: 'addgamebylink',
+        description: `🔗 Add a Steam game to your server's watchlist using a link.\n`,
+    },
+    {
         name: 'removegame',
         description: `🗑️ Remove a tracked game from your server's watch list.\n`,
     },
