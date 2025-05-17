@@ -66,7 +66,7 @@ const searchGame = async(gameName) => {
                 //await delay(500)
 
                 const gameResponseData = await gameDetails(game.appid)
-                if(gameResponseData[game.appid].success){
+                if(gameResponseData){
                     gameData = gameResponseData[game.appid].data
                     results.push({
                         appid: game.appid,
@@ -98,10 +98,10 @@ const gameDetails = async (appId) => {
     //     return JSON.parse(cachedGame)
     // }
     const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=bd&l=english`)
-    // if(response.data[appId].success){
-    //     await redisClient.setEx(cacheKey, 43200, JSON.stringify(response.data))
-    // } 
-    return response.data
+    if(response.data[appId].success){
+        return response.data
+    } 
+    return ''
 }
 
 module.exports = {

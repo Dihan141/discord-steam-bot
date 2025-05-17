@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const cron = require('node-cron')
 const express = require('express');
 const { checkPrice } = require('./UtilityFunctions/priceChecker');
+const { sendUpdateMessage } = require('./UtilityFunctions/update');
 const app = express()
 
 const PORT = process.env.PORT || 5000
@@ -74,6 +75,11 @@ app.get('/', (req, res) => {
 app.get('/check-price', (req, res) => {
 	checkPrice(client)
 	res.send('checked price!')
+})
+
+app.get('/check-update', (req, res) => {
+	sendUpdateMessage(client)
+	res.send('update message sent!')
 })
 
 // Log in to Discord
