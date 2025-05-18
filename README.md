@@ -1,4 +1,5 @@
 # 🎮 Steam Stalker
+![steam](./assets/steam.jpg)
 
 **Steam Stalker** is a powerful Discord bot that helps gaming communities track Steam game prices, receive sale alerts, and discover historical low deals — all within your server. Perfect for keeping your server up to date with the hottest discounts and historical lows!
 
@@ -6,13 +7,22 @@
 
 ## 🔧 Features
 
-- 🔍 **Search Steam Games**  
+- 🔍 **Search Steam Games**
+  
+  ![search](./assets/search.png)
+  
   Quickly search for any Steam game using fuzzy search powered by Fuse.js.
 
-- 💾 **Save Games to Watchlist**  
+- 💾 **Save Games to Watchlist**
+
+  ![addgame](./assets/addgame.png)
+  
   Add games to a server-wide tracked list using interactive message components.
 
-- 🛎️ **Sale & Historical Low Alerts**  
+- 🛎️ **Sale & Historical Low Alerts**
+
+  ![salenoti](./assets/salenoti.png)
+  
   Automatically notifies your server when a saved game goes on sale or hits its historical low price.
 
 - 📅 **Daily Price Monitoring**  
