@@ -64,7 +64,18 @@
 git clone https://github.com/your-username/steam-stalker.git
 cd steam-stalker
 ```
-### 2. Install Dependencies
+### 2. Set env file & Install dependencies
+```bash
+TOKEN="TOKEN RECEIVED FROM DISCORD DEVELOPER PORTAL"
+APPID="DISCORD APP ID FROM PORTAL"
+GUILDID="YOUR GUILD ID, ONLY NEEDED IF YOU WANT TO TEST IT OUT LOCALLY"
+PORT="SPECIFY PORT NUMBER"
+
+REDIS_URL="URL OF HOSTED OR LOCAL REDIS INSTANCE"
+MONGO_URI="MONGODB CONNECTION URL"
+
+ISTHEREANYDEAL_APIKEY="API KEY OBTAINED FROM ISTHEREANYDEAL"
+```
 
 ```bash
 npm install
